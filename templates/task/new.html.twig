@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+        {% block body %}
+
+        {{ form_start(form) }}
+            {{ form_row(form.name) }}
+            {{ form_row(form.description) }}
+
+                <h3>Tags</h3>
+                <ul class="tags" data-index="{{ form.tags|length > 0 ? form.tags|last.vars.name + 1 : 0 }}" data-prototype="{{ form_widget(form.tags.vars.prototype)|e('html_attr') }}">
+                {% for tag in form.tags %}
+                    <li class="list">{{ form_row(tag.name) }}</li>
+                {% endfor %}
+                </ul>
+                <button type="button" class="add_item_link" data-collection-holder-class="tags">Add a tag</button>
+                <button class="btn btn-primary">Validate</button>
+        {{ form_end(form) }}
+
+        {% endblock %}
+        <script>
+                var n = 2;
+                const addTagFormDeleteLink = (tagFormLi) => {
+                    const removeFormButton = document.createElement('button')
+                        
+                    removeFormButton.classList
+                    removeFormButton.innerText = 'Delete this tag'
+
+                    tagFormLi.append(removeFormButton);
+
+                    removeFormButton.addEventListener('click', (e) => {
+                        e.preventDefault()
+                        // remove the li for the tag form
+                        tagFormLi.remove();
+                        n--;
+                    });
+                }
+                const tags = document.querySelectorAll('li.list')
+                tags.forEach((tag) => {
+                    addTagFormDeleteLink(tag)
+                });
+                const addFormToCollection = (e) => {
+                const collectionHolder = document.querySelector('.' + e.currentTarget.dataset.collectionHolderClass);
+                const item = document.createElement('li');
+                
+                collectionHolder.dataset.index = n;
+                item.innerHTML = collectionHolder
+                    .dataset
+                    .prototype
+                    .replace(
+                    /__name__/g,
+                    collectionHolder.dataset.index
+                    );  
+                collectionHolder.appendChild(item);
+                addTagFormDeleteLink(item)
+                n++;
+                };
+
+                document
+                    .querySelectorAll('.add_item_link')
+                    .forEach(btn => btn.addEventListener("click", addFormToCollection));
+
+        </script>
+    </body>
+</html>
